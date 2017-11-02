@@ -252,10 +252,21 @@
                                         "type" : "object",
                                         "required" : true,
                                         "properties" : {
-                                            "name" : {
+                                            "id" : {
                                                 "type" : "string",
                                                 "inputType" : "Text",
-                                                "title" : "Field name",
+                                                "title" : "Field ID",
+                                                "default" : "",
+                                                "validators" : [ 
+                                                    "required"
+                                                ],
+                                                "help" : "Field ID e.g. (email, firstname, lastname, country, region, gender)",
+                                                "translatable" : true
+                                            },
+                                            "title" : {
+                                                "type" : "string",
+                                                "inputType" : "Text",
+                                                "title" : "Field title",
                                                 "default" : "",
                                                 "validators" : [ 
                                                     "required"
@@ -264,7 +275,7 @@
                                                 "translatable" : true
                                             },
                                             "type" : {
-                                                "title" : "Handler",
+                                                "title" : "type",
                                                 "Help" : "",
                                                 "type" : "string",
                                                 "required" : true,
