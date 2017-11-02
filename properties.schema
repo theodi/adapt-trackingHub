@@ -66,7 +66,7 @@
                                 "_channels" : {
                                     "type" : "array",
                                     "required" : true,
-                                    "title" : "Items",
+                                    "title" : "Channels",
                                     "items" : {
                                         "type" : "object",
                                         "required" : true,
@@ -209,6 +209,92 @@
                                                 },
                                                 "validators" : [],
                                                 "help" : "True or false, to indicate that this channel is the one from which the course should load the saved state, if it exists. Important: there should only be one channel with this property set to true."
+                                            }
+                                        }
+                                    }
+                                },
+                                "saveTitle" : {
+                                    "type" : "string",
+                                    "inputType" : "Text",
+                                    "title" : "Save box title",
+                                    "default" : "",
+                                    "validators" : [ 
+                                        "required"
+                                    ],
+                                    "help" : "The title of the popup box to prompt people to save their status.",
+                                    "translatable" : true
+                                },
+                                "saveBody" : {
+                                    "type" : "string",
+                                    "inputType" : "TextArea",
+                                    "title" : "Save box text",
+                                    "default" : "",
+                                    "help" : "Description that goes in the popup box under the title",
+                                    "translatable" : true
+                                },
+                                "fields" : {
+                                    "type" : "array",
+                                    "required" : true,
+                                    "title" : "Input fields",
+                                    "items" : {
+                                        "type" : "object",
+                                        "required" : true,
+                                        "properties" : {
+                                            "name" : {
+                                                "type" : "string",
+                                                "inputType" : "Text",
+                                                "title" : "Field name",
+                                                "default" : "",
+                                                "validators" : [ 
+                                                    "required"
+                                                ],
+                                                "help" : "Field name e.g. (email)",
+                                                "translatable" : true
+                                            },
+                                            "type" : {
+                                                "title" : "Handler",
+                                                "Help" : "",
+                                                "type" : "string",
+                                                "required" : true,
+                                                "enum" : [ 
+                                                    "email",
+                                                    "text", 
+                                                    "date", 
+                                                    "password"
+                                                ],
+                                                "inputType" : {
+                                                    "type" : "Select",
+                                                    "options" : [ 
+                                                        "email",
+                                                        "text", 
+                                                        "date", 
+                                                        "password"
+                                                    ]
+                                                },
+                                                "default" : "text",
+                                                "editorOnly" : true
+                                            },
+                                            "placeholder" : {
+                                                "type" : "string",
+                                                "inputType" : "Text",
+                                                "title" : "Placeholder text",
+                                                "default" : "",
+                                                "help" : "Placeholder text",
+                                                "translatable" : true
+                                            },
+                                            "required" : {
+                                                "type" : "boolean",
+                                                "required" : true,
+                                                "default" : true,
+                                                "title" : "Required field?",
+                                                "inputType" : {
+                                                    "type" : "Boolean",
+                                                    "options" : [ 
+                                                        true, 
+                                                        false
+                                                    ]
+                                                },
+                                                "help" : "True or false, to indicate if this field is required."
                                             }
                                         }
                                     }
