@@ -212,8 +212,20 @@
                                             }
                                         }
                                     }
-                                },
-                                "saveTitle" : {
+                                }
+                            }
+                        }
+                    }
+                },
+                "course" : {
+                    "type" : "object",
+                    "properties" : {
+                        "_trackingHub" : {
+                            "type" : "object",
+                            "required" : false,
+                            "legend" : "Tracking Hub",
+                            "properties" : {
+                                  "saveTitle" : {
                                     "type" : "string",
                                     "inputType" : "Text",
                                     "title" : "Save box title",
