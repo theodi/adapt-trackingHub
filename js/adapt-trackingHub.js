@@ -90,6 +90,11 @@ define([
       this.listenTo(Adapt.blocks, 'change:_isComplete', this.onStateChanged);
 //      this.listenTo(Adapt, 'assessment:complete', this.updateAssessmentDetails);
       this.listenTo(Adapt, 'userDetails:updated', this.updateUserDetails);
+      this.listenTo(Adapt.config, 'change:_activeLanguage', function() {
+         this.saveState();
+         this.listenToOnce(Adapt, 'app:dataReady', this.loadState);
+         this.listenToOnce(Adapt, 'app:dataReady', this.onDataReady);
+      });
     },
 
     sessionTimer: function(target) {
@@ -121,6 +126,7 @@ define([
   */  
     onStateChanged: function(target) {
       var stateValue = this._state[target.get("_type") + "s"][target.get("_id")];
+      this.saveState();
       if (!target.get("_isComplete") == stateValue || target.get('_userAnswer')) {
         this.saveState();
       } else {
