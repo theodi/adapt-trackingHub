@@ -1,5 +1,6 @@
 define([
   'coreJS/adapt',
+  './theme-manager',
   './string-messageComposer',
   './learnify-messageComposer',
   './consoleLog-transportHandler',
@@ -8,7 +9,7 @@ define([
   './xapi/xapi-manager',
   './xapi/xapi-messageComposer',
   './xapi/xapi-transportHandler'
-], function(Adapt, stringMessageComposer, learnifyMessageComposer, consoleLogTransportHandler, localStorageTransportHandler,ODILRSStorageTransportHandler, xapiManager, xapiMessageComposer, xapiTransportHandler ) {
+], function(Adapt, themeManager, stringMessageComposer, learnifyMessageComposer, consoleLogTransportHandler, localStorageTransportHandler,ODILRSStorageTransportHandler, xapiManager, xapiMessageComposer, xapiTransportHandler ) {
 
     var TrackingHub = _.extend({
 
