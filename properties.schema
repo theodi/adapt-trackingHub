@@ -244,6 +244,14 @@
                                     "help" : "Description that goes in the popup box under the title",
                                     "translatable" : true
                                 },
+                                "emailTemplate" : {
+                                    "type" : "string",
+                                    "inputType" : "Text",
+                                    "title" : "emailTemplate",
+                                    "default" : "",
+                                    "help" : "The email template to send when users sign up (requires integration with Mandrill)",
+                                    "translatable" : true
+                                },
                                 "fields" : {
                                     "type" : "array",
                                     "required" : true,

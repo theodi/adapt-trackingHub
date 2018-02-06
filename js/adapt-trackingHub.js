@@ -114,6 +114,7 @@ define([
         localuser[prop] = user[prop];
       }
       this._data.user = localuser;
+      this.saveState();
     },
 
     updateAssessmentDetails: function(assessment) {
@@ -271,6 +272,7 @@ define([
       this._state.assessments = this._data.assessments || {};
       //$.parseJSON(localStorage.getItem("user")) || {};
       pageID = this._data.currentPage;
+      overallProgress = 0;
       _.each(Adapt.contentObjects.models, function(contentObject) {
         contentPageID = contentObject.get('_trackingHub')._pageID || contentObject.get('_id');
         // IDIOT DAVE THIS IS EVERY PAGE SO NOT JUST THE ONE ON THE SCREEN!!! 

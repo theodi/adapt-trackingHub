@@ -11,14 +11,15 @@ define([
       //console.log(msg);
     },
 
-    updateLRS: function(state) {
+    updateLRS: function(state,courseID) {
       Adapt.trigger('trackingHub:saving');
       if (!state.user.id || state.user.id == null || state.user.id == "null") return;
       send = {};
       send.data = JSON.stringify(state);
+      send.courseID = courseID;
       $.ajax({
         type: "POST",
-        url: this._URL + "store.php",         
+        url: this._URL + "store.php?courseID=" + courseID,         
         data: send,
         success: function(ret) {
           Adapt.trigger('trackingHub:success');
@@ -71,7 +72,7 @@ define([
       user.lastSave = new Date().toString();
       state.user = user;
       localStorage.setItem(courseID,JSON.stringify(state));
-      this.updateLRS(state);
+      this.updateLRS(state,courseID);
     },
 
     loadState: function(channel, courseID) {
@@ -83,7 +84,7 @@ define([
       }
       if (loadID) {
         localStorage.setItem('UserID',loadID);
-        url = this._URL + 'load.php?id=' + loadID;
+        url = this._URL + 'load.php?id=' + loadID + '&courseID=' + courseID;
         // This feels so wrong!
         try {
         return $.parseJSON($.ajax({

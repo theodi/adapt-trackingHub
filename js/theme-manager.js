@@ -60,7 +60,6 @@ define(function(require) {
 	var click_bind = false;
 
 	function showMessage(phraseId) {
-		console.log("In show message");
 		
 		var saveTitle = Adapt.course.get('_trackingHub').saveTitle;
 		var saveBody = Adapt.course.get('_trackingHub').saveBody;
@@ -120,9 +119,10 @@ define(function(require) {
 
 
 	function checkWelcome(user) {
-		if (!user.email && !localStorage.getItem("ODI_Welcome_Done")) {
+		if (!user.email) {
+		//if (!user.email && !user.welcomeDone) {
 			showMessage('enter_email');
-			localStorage.setItem("ODI_Welcome_Done",true);
+			user.welcomeDone = true;
 		}
 	}
 
