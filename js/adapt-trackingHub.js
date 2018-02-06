@@ -294,7 +294,7 @@ define([
         pageProgress.courseID = courseID;
         pageProgress.lang = lang;
         try {
-          pageProgress.theme = theme || "vanilla";
+          pageProgress.theme = this._config.emailTemplate || theme || "vanilla";
         } catch (err) {
           pageProgress.theme = "vanilla";
         }
