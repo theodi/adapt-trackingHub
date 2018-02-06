@@ -8,7 +8,6 @@ define(function(require) {
 	// ==========
 
 	Adapt.on('pageView:ready', function(view) {
-		console.log('here');
 		$('.intro-logo .graphic-widget img').attr('src','adapt/css/assets/intro-logo.png');
 		$('.intro-logo .graphic-widget img').attr('data-large','adapt/css/assets/intro-logo.png');
 		$('.intro-logo .graphic-widget img').attr('data-small','adapt/css/assets/intro-logo.png');
@@ -92,7 +91,7 @@ define(function(require) {
 
         Adapt.trigger('tutor:opened');
 
-        $("#countries").msDropdown();
+        //$("#countries").msDropdown();
 	}
 
 	function addListeners() {
@@ -135,7 +134,6 @@ define(function(require) {
 		if (!sessionEmail) {
 			emailPresent = false;
 			checkWelcome(user);
-			console.log('here 2 ');
 			$('#save-section').html("<button class='slbutton' id='saveSession'>"+Adapt.course.get('_trackingHub').saveTitle+"</button>");
 			$('#save-section').fadeIn();
 			click_bind = false;

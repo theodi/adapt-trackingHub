@@ -8,7 +8,8 @@ define([
   './ODILRSStorage-transportHandler',
   './xapi/xapi-manager',
   './xapi/xapi-messageComposer',
-  './xapi/xapi-transportHandler'
+  './xapi/xapi-transportHandler',
+  './trackingHub-offlineStorage'
 ], function(Adapt, themeManager, stringMessageComposer, learnifyMessageComposer, consoleLogTransportHandler, localStorageTransportHandler,ODILRSStorageTransportHandler, xapiManager, xapiMessageComposer, xapiTransportHandler ) {
 
     var TrackingHub = _.extend({
@@ -78,6 +79,12 @@ define([
           }
         }
       }, this);
+
+      Adapt.offlineStorage.get();
+
+      if (Adapt.offlineStorage.setReadyStatus) {
+        Adapt.offlineStorage.setReadyStatus();
+      }
     },
 
     onDataReady: function() {
@@ -89,8 +96,9 @@ define([
       this.listenTo(Adapt.components, 'change:_isInteractionComplete', this.onStateChanged);
       this.listenTo(Adapt.contentObjects, 'change:_isInteractionComplete', this.saveState);
       this.listenTo(Adapt.blocks, 'change:_isComplete', this.onStateChanged);
-//      this.listenTo(Adapt, 'assessment:complete', this.updateAssessmentDetails);
+      this.listenTo(Adapt, 'assessment:complete', this.updateAssessmentDetails);
       this.listenTo(Adapt, 'userDetails:updated', this.updateUserDetails);
+
     },
 
     sessionTimer: function(target) {
@@ -107,19 +115,18 @@ define([
       }
       this._data.user = localuser;
     },
-/*
+
     updateAssessmentDetails: function(assessment) {
       allassessments = this._data.assessments || {};
       local = allassessments[this._data.currentPage] || {};
       for(var prop in assessment) {
         local[prop] = assessment[prop];
       }
-      allassessments[this._data.currentPage] = local;
-      this._data.assessments = allassessments;
+      //allassessments[this._data.currentPage] = local;
+      this._data.assessments = local;
       this.saveState();
-      console.log(allassessments);
     },
-  */  
+
     onStateChanged: function(target) {
       var stateValue = this._state[target.get("_type") + "s"][target.get("_id")];
       if (!target.get("_isComplete") == stateValue || target.get('_userAnswer')) {
@@ -252,13 +259,16 @@ define([
     },
       
     updateState: function() {
-      this._state = this._state || { "blocks": {}, "components": {}, "answers": {}, "progress": {}, "user": {} };
+      this._state = this._state || { "blocks": {}, "components": {}, "answers": {}, "progress": {}, "user": {}, "assessments": {} };
       courseID = this._config._courseID;
+      this._state.progress["_isComplete"] = Adapt.course.get('_isComplete');
+      this._state.progress["_courseID"] = courseID;
       lang = Adapt.config.get('_activeLanguage');
       this.window_unfocused();
       // THIS DOESN'T WORK
       //this._state._isComplete = Adapt.course.get('_isComplete');
       this._state.user = this._data.user || {};
+      this._state.assessments = this._data.assessments || {};
       //$.parseJSON(localStorage.getItem("user")) || {};
       pageID = this._data.currentPage;
       _.each(Adapt.contentObjects.models, function(contentObject) {
@@ -281,7 +291,11 @@ define([
         pageProgress.sessionTime = sessionTime;
         pageProgress.courseID = courseID;
         pageProgress.lang = lang;
-        pageProgress.theme = theme;
+        try {
+          pageProgress.theme = theme || "vanilla";
+        } catch (err) {
+          pageProgress.theme = "vanilla";
+        }
         pageProgress._isComplete = false;
         if (contentObject.get('completedChildrenAsPercentage')) {
           localProgress = contentObject.get('completedChildrenAsPercentage');
@@ -305,9 +319,27 @@ define([
           this._state.progress[contentPageID] = pageProgress;
         }
       }, this);
+     
+      _.each(Adapt.assessment, function(assessment) {
+        
+        assessmentObjects = {};
+        
+        try {
+          assessmentObjects = assessment._byAssessmentId;
+        } catch(err) {}
+        
+        pointer = this;
+        _.each(assessmentObjects, function(value, key) {
+            pointer._state.assessments[key] = value.getSaveState();
+
+        }, pointer);
+        
+      }, this);
+      
       _.each(Adapt.blocks.models, function(block) {
         this._state.blocks[block.get('_id')] = block.get('_isComplete');
       }, this);
+
       _.each(Adapt.components.models, function(component) {
         contentPageID = component.getParent().getParent().getParent().get('_trackingHub')._pageID || component.getParent().getParent().getParent().get('_id');
 
@@ -361,6 +393,10 @@ define([
       if (state) {
         this._data.progress = state.progress;
         this._data.user = state.user;
+        this._data.assessments = state.assessments;
+        Adapt.offlineStorage.set("assessment",state.assessments);
+        //Adapt.course.set('_isComplete', this._data.progress._isComplete);
+        //Adapt.course.set('_isAssessmentPassed', this._data.assessments.isPass);
         //localStorage.setItem('progress',JSON.stringify(state.progress));
         //localStorage.setItem('user',JSON.stringify(state.user));
         _.each(Adapt.blocks.models, function(targetBlock) {
@@ -377,10 +413,11 @@ define([
               targetComponent.set('_isSubmitted', true);
               targetComponent.set('_isInteractionComplete', true);
             }
-            //targetComponent.restoreUserAnswers();
-            //targetComponent.updateButtons();
+            targetComponent.restoreUserAnswers();
+            targetComponent.updateButtons();
           }
         });
+
       };
       this.updateState();
     },
