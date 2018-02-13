@@ -263,7 +263,7 @@ define([
       this._state = this._state || { "blocks": {}, "components": {}, "answers": {}, "progress": {}, "user": {}, "assessments": {} };
       courseID = this._config._courseID;
       this._state.progress["_isComplete"] = Adapt.course.get('_isComplete');
-      this._state.progress["_courseID"] = courseID;
+      this._state.progress["courseID"] = courseID;
       lang = Adapt.config.get('_activeLanguage');
       this.window_unfocused();
       // THIS DOESN'T WORK
