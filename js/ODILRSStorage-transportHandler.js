@@ -11,15 +11,16 @@ define([
       //console.log(msg);
     },
 
-    updateLRS: function(state,courseID) {
+    //updateLRS: function(state,courseID) {
+    updateLRS: function(state) {
       Adapt.trigger('trackingHub:saving');
       if (!state.user.id || state.user.id == null || state.user.id == "null") return;
       send = {};
       send.data = JSON.stringify(state);
-      send.courseID = courseID;
+      //send.courseID = courseID;
       $.ajax({
         type: "POST",
-        url: this._URL + "store.php?courseID=" + courseID,         
+        url: this._URL + "store.php",         
         data: send,
         success: function(ret) {
           Adapt.trigger('trackingHub:success');
@@ -72,7 +73,8 @@ define([
       user.lastSave = new Date().toString();
       state.user = user;
       localStorage.setItem(courseID,JSON.stringify(state));
-      this.updateLRS(state,courseID);
+      this.updateLRS(state);
+      //this.updateLRS(state,courseID);
     },
 
     loadState: function(channel, courseID) {

@@ -7,20 +7,6 @@ define(function(require) {
 	// Block View
 	// ==========
 
-	Adapt.on('pageView:ready', function(view) {
-		$('.intro-logo .graphic-widget img').attr('src','adapt/css/assets/intro-logo.png');
-		$('.intro-logo .graphic-widget img').attr('data-large','adapt/css/assets/intro-logo.png');
-		$('.intro-logo .graphic-widget img').attr('data-small','adapt/css/assets/intro-logo.png');
-		try {
-            email = Adapt.course.get('_globals')._extensions._aboutPage.contactEMail;
-            text = Adapt.course.get('_globals')._extensions._aboutPage.contactLinkText;
-			if( $('.about-links').size() > 0) {
-            	$('.about-links').append(' | ');
-        	} 
-        	$('.about-links').append('<a class="contact" href="mailto:'+email+'">'+text+'</a>');
-		} catch (err) {}
-	});
-
 	Adapt.on('userDetails:updated', function(user) {
 		emailSave(user);
 		emailPresent = true;

@@ -262,24 +262,74 @@ define([
     updateState: function() {
       this._state = this._state || { "blocks": {}, "components": {}, "answers": {}, "progress": {}, "user": {}, "assessments": {} };
       courseID = this._config._courseID;
-      this._state.progress["_isComplete"] = Adapt.course.get('_isComplete');
       this._state.progress["courseID"] = courseID;
       lang = Adapt.config.get('_activeLanguage');
       this.window_unfocused();
-      // THIS DOESN'T WORK
-      //this._state._isComplete = Adapt.course.get('_isComplete');
       this._state.user = this._data.user || {};
       this._state.assessments = this._data.assessments || {};
-      //$.parseJSON(localStorage.getItem("user")) || {};
       pageID = this._data.currentPage;
       overallProgress = 0;
+
+      _.each(Adapt.assessment, function(assessment) {
+
+        assessmentObjects = {};
+        //allPassed = true;
+
+        try {
+          assessmentObjects = assessment._byAssessmentId;
+        } catch(err) {}
+        
+        pointer = this;
+
+        _.each(assessmentObjects, function(value, key) {
+            pointer._state.assessments[key] = value.getSaveState();
+            state = value.getState();
+            saveState = {};
+            saveState["id"] = state["id"];
+            saveState["isComplete"] = state["isComplete"];
+            saveState["attemptsSpent"] = state["attemptsSpent"];
+            saveState["isPass"] = state["isPass"];
+            if (saveState["isPass"]) {
+              saveState["_assessmentState"] = "Passed";
+            }
+            if (saveState["isPass"] === false) {
+              saveState["_assessmentState"] = "Failed";
+            }
+            saveState["isPercentageBased"] = state["isPercentageBased"];
+            saveState["lastAttemptScoreAsPercent"] = state["lastAttemptScoreAsPercent"];
+            saveState["maxScore"] = state["maxScore"];
+            saveState["score"] = state["score"];
+            saveState["scoreAsPercent"] = state["scoreAsPercent"];
+            saveState["scoreToPass"] = state["scoreToPass"];
+            try {
+              output = pointer._data.progress[value.getParent().get('_id')]["assessments"];
+            } catch(err) {
+              pointer._data.progress[value.getParent().get('_id')] = {};
+              output = {};
+            }
+            output[state["id"]] = saveState;
+            pointer._data.progress[value.getParent().get('_id')]["assessments"] = output;
+        }, pointer);
+        
+      }, this);
+
+      this._state.progress["_isComplete"] = Adapt.course.get('_isComplete');
+
+      try {
+        if (this._state.assessments["isComplete"]) {
+          this._state.progress["_isPass"] = this._state.assessments["isPass"];
+          if (this._state.assessments["isPass"]) {
+            this._state.progress["_isComplete"] = true;
+          }
+        }
+      } catch (err) {}        
+
       _.each(Adapt.contentObjects.models, function(contentObject) {
         contentPageID = contentObject.get('_trackingHub')._pageID || contentObject.get('_id');
-        // IDIOT DAVE THIS IS EVERY PAGE SO NOT JUST THE ONE ON THE SCREEN!!! 
-        //localID = contentObject.getParent()
+
         localProgress = 0;
         progressObject = this._data.progress || {};
-        //progressObject = $.parseJSON(localStorage.getItem("progress")) || {};
+
         pageProgress = progressObject[contentPageID] || {};
         if (contentPageID) {
           this._state.progress[contentPageID] = {};
@@ -287,7 +337,6 @@ define([
 
         pageTimes = this._data.sessionTimes || {};
         thisPage = pageTimes[contentPageID] || {};
-        //pageTimes = $.parseJSON(localStorage.getItem('sessionTimes')) || {};
         
         sessionTime = thisPage.sessionTime || undefined;
         pageProgress.sessionTime = sessionTime;
@@ -299,6 +348,7 @@ define([
           pageProgress.theme = "vanilla";
         }
         pageProgress._isComplete = false;
+
         if (contentObject.get('completedChildrenAsPercentage')) {
           localProgress = contentObject.get('completedChildrenAsPercentage');
           if (localProgress > 10 && !pageProgress.startTime) {
@@ -315,27 +365,10 @@ define([
             this._data.progress[contentPageID] = pageProgress;
           }
           
-          //localStorage.setItem('progress',JSON.stringify(progressObject));
         }
         if (contentPageID) {
           this._state.progress[contentPageID] = pageProgress;
         }
-      }, this);
-     
-      _.each(Adapt.assessment, function(assessment) {
-        
-        assessmentObjects = {};
-        
-        try {
-          assessmentObjects = assessment._byAssessmentId;
-        } catch(err) {}
-        
-        pointer = this;
-        _.each(assessmentObjects, function(value, key) {
-            pointer._state.assessments[key] = value.getSaveState();
-
-        }, pointer);
-        
       }, this);
       
       _.each(Adapt.blocks.models, function(block) {
@@ -354,17 +387,6 @@ define([
           this._state.progress[contentPageID].answers[component.get('_id')] = {};
           this._state.progress[contentPageID].answers[component.get('_id')]._userAnswer = component.get('_userAnswer');
           this._state.progress[contentPageID].answers[component.get('_id')]._isCorrect = component.get('_isCorrect');
-          if (!this._state.progress[contentPageID].answers._assessmentState) {
-            this._state.progress[contentPageID].answers._assessmentState = "Not Attempted";
-          }
-          if (component.get('_isCorrect') == false) {
-            this._state.progress[contentPageID].answers._assessmentState = "Failed";  
-          } else if (component.get('_isCorrect') == true && this._state.progress[contentPageID].answers._assessmentState != "Failed") {
-            this._state.progress[contentPageID].answers._assessmentState = "Passed";
-          }
-          if (component.get('_userAnswer').length < 1) {
-            this._state.progress[contentPageID].answers._assessmentState = "Incomplete";  
-          }
         }
       }, this);
     },
@@ -373,7 +395,7 @@ define([
       this.updateState();
       _.each(this._channels, function(channel) {
         if (channel._saveStateIsEnabled) {
-          this._transport_handlers[channel._transport._handlerName].saveState(this._state, channel, this._config._courseID);
+        this._transport_handlers[channel._transport._handlerName].saveState(this._state, channel, this._config._courseID);
         }
       }, this);
     }, 
