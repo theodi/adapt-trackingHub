@@ -143,7 +143,7 @@ define([
         : false;
     
       if (this._config && this._config._isEnabled !== false) {
-        this._config._courseID = this._config._courseID || ADL.ruuid();
+        this._config._courseID = this._config._courseID || Adapt.config.get('_courseId') || ADL.ruuid();
         return true;
       }
       return false;
@@ -314,6 +314,14 @@ define([
       }, this);
 
       this._state.progress["_isComplete"] = Adapt.course.get('_isComplete');
+      this._state.progress["courseID"] = Adapt.config.get('_courseId');
+      this._state.progress["trackingHubID"] = this._config._courseID;
+      this._state.progress["lang"] = lang;
+      try {
+        this._state.progress["theme"] = this._config.emailTemplate || theme || "vanilla";
+      } catch (err) {
+        this._state.progress["theme"] = "vanilla";
+      }
 
       try {
         if (this._state.assessments["isComplete"]) {
@@ -341,12 +349,6 @@ define([
         sessionTime = thisPage.sessionTime || undefined;
         pageProgress.sessionTime = sessionTime;
         pageProgress.courseID = courseID;
-        pageProgress.lang = lang;
-        try {
-          pageProgress.theme = this._config.emailTemplate || theme || "vanilla";
-        } catch (err) {
-          pageProgress.theme = "vanilla";
-        }
         pageProgress._isComplete = false;
 
         if (contentObject.get('completedChildrenAsPercentage')) {

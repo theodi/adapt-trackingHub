@@ -58,9 +58,9 @@
                                     "title" : "Course ID",
                                     "default" : "",
                                     "validators" : [ 
-                                        "required"
+                                        ""
                                     ],
-                                    "help" : "The unique global ID for this course (page) to be tracked by",
+                                    "help" : "The unique global ID for this course (page) to be tracked by. By default this is the Adapt Course ID but can be overridden if you have imported/exported it and IDs might change!",
                                     "translatable" : true
                                 },
                                 "emailTemplate" : {
