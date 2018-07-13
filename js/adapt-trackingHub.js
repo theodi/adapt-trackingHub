@@ -143,7 +143,8 @@ define([
         : false;
     
       if (this._config && this._config._isEnabled !== false) {
-        this._config._courseID = this._config._courseID || Adapt.config.get('_courseId') || ADL.ruuid();
+        this._config._trackingHubID = this._config._courseID;
+        this._config._courseID = Adapt.config.get('_courseId') || ADL.ruuid();
         return true;
       }
       return false;
@@ -315,7 +316,7 @@ define([
 
       this._state.progress["_isComplete"] = Adapt.course.get('_isComplete');
       this._state.progress["courseID"] = Adapt.config.get('_courseId');
-      this._state.progress["trackingHubID"] = this._config._courseID;
+      this._state.progress["trackingHubID"] = this._config._trackingHubID;
       this._state.progress["lang"] = lang;
       try {
         this._state.progress["theme"] = this._config.emailTemplate || theme || "vanilla";
@@ -394,6 +395,7 @@ define([
     },
   
     saveState: function() {
+      console.log(this._config._courseID);
       this.updateState();
       _.each(this._channels, function(channel) {
         if (channel._saveStateIsEnabled) {
@@ -403,6 +405,7 @@ define([
     }, 
   
     loadState: function() {
+      console.log(this._config._courseID);
       var stateSourceChnl = null;
       var handlerName = null;
       var state = null;
